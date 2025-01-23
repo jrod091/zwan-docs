@@ -1,0 +1,513 @@
+#AMZ Demov2 Setup template
+
+#02:00
+#aa-cpe|ab-isp|ac-lan|ad-vm
+#01-lan|02-wan|pc-id
+#01-CPE_id
+#01_infc_id
+
+#FOR CPE: LAN side MAC: 02:00:aa:01(lan):CPE-id:infc-id  (ex. infc-id will be 03 if it is going to be ETH03)
+#FOR CPE: WAN side MAC: 02:00:aa:02(wan):CPE-id:infc-id
+#FOR LAN PC:  LAN side MAC: 02:00:ab:pc-id:CPE-id:Infc-id  (ex. infc-id will be 03 if it is going to be ETH03 or eno3)
+#FOR VM: LAN side MAC: 02:00:ad:01(lan):VM-id:infc-id  (ex. infc-id will be 03 if it is going to be ETH03)
+#FOR VM: WAN side MAC: 02:00:ad:02(wan):VM-id:infc-id
+networkinfra:
+  xmlpath: "/etc/libvirt/qemu/networks/"
+  bridges:
+    -
+      domainname: "default"
+      bridgename: "virbr0"
+      stp: "on"
+      create: False
+    -
+      domainname: "net_gway"
+      bridgename: "br_gway"
+      stp: "on"
+      create: True
+    -
+      domainname: "net_dclan"
+      bridgename: "br_dclan"
+      stp: "on"
+      create: True
+    -
+      domainname: "net_br1lan0"
+      bridgename: "br_br1lan0"
+      stp: "on"
+      create: True
+    -
+      domainname: "net_br1lan1"
+      bridgename: "br_br1lan1"
+      stp: "on"
+      create: True
+    -
+      domainname: "net_br2lan0"
+      bridgename: "br_br2lan0"
+      stp: "on"
+      create: True
+    -
+      domainname: "net_br2lan1"
+      bridgename: "br_br2lan1"
+      stp: "on"
+      create: True
+    -
+      domainname: "br-wan31"
+      bridgename: "br-wan31"
+      stp: "on"
+      create: True
+    -
+      domainname: "br-wan32"
+      bridgename: "br-wan32"
+      stp: "on"
+      create: True
+    -
+      domainname: "br-wan41"
+      bridgename: "br-wan41"
+      stp: "on"
+      create: True
+    -
+      domainname: "br-wan42"
+      bridgename: "br-wan42"
+      stp: "on"
+      create: True
+    -
+      domainname: "br-wan34"
+      bridgename: "br-wan34"
+      stp: "on"
+      create: True
+ubuntu:
+  goldenubuntuvm:
+    path: "/var/lib/libvirt/images/lan-base.qcow2"
+    domainname: "lan-base"
+  startup_timeout: 30
+  ubuntuvms:
+    - domainname: "ISP_R1"
+      hostname: "ISP_R1"
+      create: True
+      description: "ISP router1"
+      interfaces:
+        - domainname: "default"
+          model: "e1000"
+          dhcp4: yes
+          dhcp4-overrides:
+            use-routes: true
+        - domainname: "br-wan31"
+          model: "e1000"
+          mac: "02:00:ab:02:01:02" # aa-cpe|ab-isp|ac-lan|ad-vm:01-lan|02-wan|pc-id:CPE-id:nic num
+          ip: "10.131.0.99/24"
+        - domainname: "br-wan32"
+          model: "e1000"
+          mac: "02:00:ab:02:01:03" # aa-cpe|ab-isp|ac-lan|ad-vm:01-lan|02-wan|pc-id:CPE-id:nic num
+          ip: "10.132.0.99/24"
+        - domainname: "br-wan34"
+          model: "e1000"
+          mac: "02:00:ab:02:01:04" # aa-cpe|ab-isp|ac-lan|ad-vm:01-lan|02-wan|pc-id:CPE-id:nic num
+          ip: "10.134.0.99/24"
+          routes:
+            - to: "10.142.0.0/24"
+              via: "10.134.0.100"
+            - to: "10.141.0.0/24"
+              via: "10.134.0.100"
+
+      #"sourcefile destination"
+      uploadfiles:
+      #These are commands run within the VM via SSH
+      sshcommands:
+        - "echo 1 > /proc/sys/net/ipv4/ip_forward"
+        - "sed -i 's/^.*\\(net.ipv4.ip_forward=1.*\\)/\\1/g' /etc/sysctl.conf"
+        - "echo 0 > /proc/sys/net/ipv4/conf/eth1/rp_filter"
+        - "echo 0 > /proc/sys/net/ipv4/conf/eth2/rp_filter"
+        - "echo 0 > /proc/sys/net/ipv4/conf/eth3/rp_filter"
+        - "echo 0 > /proc/sys/net/ipv4/conf/all/rp_filter"
+        - "echo net.ipv4.conf.eth1.rp_filter=0 >> /etc/sysctl.conf"
+        - "echo net.ipv4.conf.eth2.rp_filter=0 >> /etc/sysctl.conf"
+        - "echo net.ipv4.conf.eth3.rp_filter=0 >> /etc/sysctl.conf"
+        - "echo net.ipv4.conf.all.rp_filter=0 >> /etc/sysctl.conf"
+        - "iptables -I FORWARD 1 -i eth+ -o eth+ -j ACCEPT"
+        - "iptables -t nat -I POSTROUTING 1 -o eth0 -j MASQUERADE"
+        - "ip route"
+        - "iptables-save > /etc/iptables/rules.v4"
+
+    - domainname: "ISP_R2"
+      hostname: "ISP_R2"
+      create: True
+      description: "ISP router2"
+      interfaces:
+        - domainname: "default"
+          model: "e1000"
+          dhcp4: yes
+          dhcp4-overrides:
+            use-routes: true
+        - domainname: "br-wan41"
+          model: "e1000"
+          mac: "02:00:ab:02:02:02" # aa-cpe|ab-isp|ac-lan|ad-vm:01-lan|02-wan|pc-id:CPE-id:nic num
+          ip: "10.141.0.99/24"
+        - domainname: "br-wan42"
+          model: "e1000"
+          mac: "02:00:ab:02:02:03" # aa-cpe|ab-isp|ac-lan|ad-vm:01-lan|02-wan|pc-id:CPE-id:nic num
+          ip: "10.142.0.99/24"
+        - domainname: "br-wan34"
+          model: "e1000"
+          mac: "02:00:ab:02:02:04" # aa-cpe|ab-isp|ac-lan|ad-vm:01-lan|02-wan|pc-id:CPE-id:nic num
+          ip: "10.134.0.100/24"
+          routes:
+            - to: "10.132.0.0/24"
+              via: "10.134.0.99"
+            - to: "10.131.0.0/24"
+              via: "10.134.0.99"
+
+      #"sourcefile destination"
+      uploadfiles:
+      #These are commands run within the VM via SSH
+      sshcommands:
+        - "echo 1 > /proc/sys/net/ipv4/ip_forward"
+        - "sed -i 's/^.*\\(net.ipv4.ip_forward=1.*\\)/\\1/g' /etc/sysctl.conf"
+        - "echo 0 > /proc/sys/net/ipv4/conf/eth1/rp_filter"
+        - "echo 0 > /proc/sys/net/ipv4/conf/eth2/rp_filter"
+        - "echo 0 > /proc/sys/net/ipv4/conf/eth3/rp_filter"
+        - "echo 0 > /proc/sys/net/ipv4/conf/all/rp_filter"
+        - "echo net.ipv4.conf.eth1.rp_filter=0 >> /etc/sysctl.conf"
+        - "echo net.ipv4.conf.eth2.rp_filter=0 >> /etc/sysctl.conf"
+        - "echo net.ipv4.conf.eth3.rp_filter=0 >> /etc/sysctl.conf"
+        - "echo net.ipv4.conf.all.rp_filter=0 >> /etc/sysctl.conf"
+        - "iptables -I FORWARD 1 -i eth+ -o eth+ -j ACCEPT"
+        - "iptables -t nat -I POSTROUTING 1 -o eth0 -j MASQUERADE"
+        - "ip route"
+        - "iptables-save > /etc/iptables/rules.v4"
+        - "timedatectl set-timezone UTC"
+cpes:
+  goldencpevm:
+    path: "/var/lib/libvirt/images/cpe-base.qcow2"
+    domainname: "cpe-base"
+  goldenlanvm:
+    path: "/var/lib/libvirt/images/lan-base.qcow2"
+    domainname: "lan-base"
+  startup_timeout: 30
+  cpevms:
+    -
+      description: "AMZ DC LAN GATEWAY"
+      domainname: "AMZ_LAN_GW"
+      hostname: "AMZ_LAN_GW"
+      create: True
+      interfaces:
+        -
+          domainname: "net_dclan" # DC Lan network is accessed throw this gateway
+          model: "e1000"
+          mac: "02:00:aa:01:05:01" # aa-cpe|ab-isp|ac-lan|ad-vm:01-lan|02-wan|pc-id:CPE-id:nic num
+        -
+          domainname: "br-wan41" # WAN Network in DC1 subnet to configure OSPF through provider
+          model: "e1000"
+          mac: "02:00:aa:02:05:02" # aa-cpe|ab-isp|ac-lan|ad-vm:01-lan|02-wan|pc-id:CPE-id:nic num
+        -
+          domainname: "br-wan42" # WAN Network in DC2 subnet to configure OSPF through provider
+          model: "e1000"
+          mac: "02:00:aa:02:05:03" # aa-cpe|ab-isp|ac-lan|ad-vm:01-lan|02-wan|pc-id:CPE-id:nic num
+        -
+          domainname: "net_gway" # All Lan traffic from DC will enter through this interface
+          model: "e1000"
+          mac: "02:00:aa:01:05:04" # aa-cpe|ab-isp|ac-lan|ad-vm:01-lan|02-wan|pc-id:CPE-id:nic num
+
+      uploadfiles:
+      #These are commands run within the VM via SSH
+      sshcommands:
+        - "ip route"
+        - "ip -br a"
+      curlcommands:
+      curlscript: "AMZ_LAN_GW.sh"
+      lan_startup_timeout: 30
+      lanvms:
+        -
+          domainname: "DC_LAN1"
+          hostname: "DC_LAN1"
+          create: True
+          description: "DC LAN1"
+          interfaces:
+            -
+              domainname: "net_dclan"
+              model: "e1000"
+              mac: "02:00:ac:01:05:01" # aa-cpe|ab-isp|ac-lan|ad-vm:01-lan|02-wan|pc-id:CPE-id:nic num
+          uploadfiles:
+          #These are commands run within the VM via SSH
+          sshcommands:
+            - "ip a"
+            - "ip route"
+        -
+          domainname: "DC_LAN2"
+          hostname: "DC_LAN2"
+          create: True
+          description: "DC LAN2"
+          interfaces:
+            -
+              domainname: "net_dclan"
+              model: "e1000"
+              mac: "02:00:ac:02:05:01" # aa-cpe|ab-isp|ac-lan|ad-vm:01-lan|02-wan|pc-id:CPE-id:nic num
+          uploadfiles:
+          #These are commands run within the VM via SSH
+          sshcommands:
+            - "ip a"
+            - "ip route"
+        -
+          domainname: "DC_LAN3"
+          hostname: "DC_LAN3"
+          create: True
+          description: "DC LAN3"
+          interfaces:
+            -
+              domainname: "net_dclan"
+              model: "e1000"
+              mac: "02:00:ac:03:05:01" # aa-cpe|ab-isp|ac-lan|ad-vm:01-lan|02-wan|pc-id:CPE-id:nic num
+          uploadfiles:
+          #These are commands run within the VM via SSH
+          sshcommands:
+            - "ip a"
+            - "ip route"
+        -
+          domainname: "DC_LAN4"
+          hostname: "DC_LAN4"
+          create: True
+          description: "DC LAN4"
+          interfaces:
+            -
+              domainname: "net_dclan"
+              model: "e1000"
+              mac: "02:00:ac:04:05:01" # aa-cpe|ab-isp|ac-lan|ad-vm:01-lan|02-wan|pc-id:CPE-id:nic num
+          uploadfiles:
+          #These are commands run within the VM via SSH
+          sshcommands:
+            - "ip a"
+            - "ip route"
+    -
+      description: "HA DC Node 1"
+      domainname: "HA_DC1"
+      hostname: "HA_DC1"
+      create: True
+      interfaces:
+        -
+          domainname: "net_gway" # All the DC Lan traffic should go through AMZ_Gateway Node
+          model: "e1000"
+          mac: "02:00:aa:01:06:01" # aa-cpe|ab-isp|ac-lan|ad-vm:01-lan|02-wan|pc-id:CPE-id:nic num
+        -
+          domainname: "br-wan31"
+          model: "e1000"
+          mac: "02:00:aa:02:06:02" # aa-cpe|ab-isp|ac-lan|ad-vm:01-lan|02-wan|pc-id:CPE-id:nic num
+        -
+          domainname: "br-wan41"
+          model: "e1000"
+          mac: "02:00:aa:02:06:03" # aa-cpe|ab-isp|ac-lan|ad-vm:01-lan|02-wan|pc-id:CPE-id:nic num
+
+      uploadfiles:
+      #These are commands run within the VM via SSH
+      sshcommands:
+        - "ip route"
+        - "ip -br a"
+      curlcommands:
+      curlscript: "HA_DC1.sh"
+    -
+      description: "HA DC Node 2"
+      domainname: "HA_DC2"
+      hostname: "HA_DC2"
+      create: True
+      interfaces:
+        -
+          domainname: "net_gway" # All the DC Lan traffic should go through AMZ_Gateway Node
+          model: "e1000"
+          mac: "02:00:aa:01:07:01" # aa-cpe|ab-isp|ac-lan|ad-vm:01-lan|02-wan|pc-id:CPE-id:nic num
+        -
+          domainname: "br-wan32"
+          model: "e1000"
+          mac: "02:00:aa:02:07:02" # aa-cpe|ab-isp|ac-lan|ad-vm:01-lan|02-wan|pc-id:CPE-id:nic num
+        -
+          domainname: "br-wan42"
+          model: "e1000"
+          mac: "02:00:aa:02:07:03" # aa-cpe|ab-isp|ac-lan|ad-vm:01-lan|02-wan|pc-id:CPE-id:nic num
+
+      uploadfiles:
+      #These are commands run within the VM via SSH
+      sshcommands:
+        - "ip route"
+        - "ip -br a"
+      curlcommands:
+      curlscript: "HA_DC2.sh"
+    -
+      description: "Branch 1"
+      domainname: "BR1"
+      hostname: "BR1"
+      create: True
+      interfaces:
+        -
+          domainname: "net_br1lan0"
+          model: "e1000"
+          mac: "02:00:aa:01:08:01" # aa-cpe|ab-isp|ac-lan|ad-vm:01-lan|02-wan|pc-id:CPE-id:nic num
+        -
+          domainname: "br-wan31"
+          model: "e1000"
+          mac: "02:00:aa:02:08:02" # aa-cpe|ab-isp|ac-lan|ad-vm:01-lan|02-wan|pc-id:CPE-id:nic num
+        -
+          domainname: "br-wan41"
+          model: "e1000"
+          mac: "02:00:aa:02:08:03" # aa-cpe|ab-isp|ac-lan|ad-vm:01-lan|02-wan|pc-id:CPE-id:nic num
+        -
+          domainname: "net_br1lan1"
+          model: "e1000"
+          mac: "02:00:aa:01:08:04" # aa-cpe|ab-isp|ac-lan|ad-vm:01-lan|02-wan|pc-id:CPE-id:nic num
+      
+      uploadfiles:
+      #These are commands run within the VM via SSH
+      sshcommands:
+        - "ip route"
+        - "ip -br a"
+      curlcommands:
+      curlscript: "BR1.sh"
+      lan_startup_timeout: 30
+      lanvms:
+        -
+          domainname: "BR1_LAN1"
+          hostname: "BR1_LAN1"
+          create: True
+          description: "BRANCH_1 LAN1"
+          interfaces:
+            -
+              domainname: "net_br1lan0"
+              model: "e1000"
+              mac: "02:00:ac:01:08:01" # aa-cpe|ab-isp|ac-lan|ad-vm:01-lan|02-wan|pc-id:CPE-id:nic num
+          uploadfiles:
+          #These are commands run within the VM via SSH
+          sshcommands:
+            - "ip a"
+            - "ip route"
+        -
+          domainname: "BR1_LAN2"
+          hostname: "BR1_LAN2"
+          create: True
+          description: "BRANCH_1 LAN2"
+          interfaces:
+            -
+              domainname: "net_br1lan0"
+              model: "e1000"
+              mac: "02:00:ac:02:08:01" # aa-cpe|ab-isp|ac-lan|ad-vm:01-lan|02-wan|pc-id:CPE-id:nic num
+          uploadfiles:
+          #These are commands run within the VM via SSH
+          sshcommands:
+            - "ip a"
+            - "ip route"
+        -
+          domainname: "BR1_LAN3"
+          hostname: "BR1_LAN3"
+          create: True
+          description: "BRANCH_1 LAN3"
+          interfaces:
+            -
+              domainname: "net_br1lan1"
+              model: "e1000"
+              mac: "02:00:ac:03:08:01" # aa-cpe|ab-isp|ac-lan|ad-vm:01-lan|02-wan|pc-id:CPE-id:nic num
+          uploadfiles:
+          #These are commands run within the VM via SSH
+          sshcommands:
+            - "ip a"
+            - "ip route"
+        -
+          domainname: "BR1_LAN4"
+          hostname: "BR1_LAN4"
+          create: True
+          description: "BRANCH_1 LAN4"
+          interfaces:
+            -
+              domainname: "net_br1lan1"
+              model: "e1000"
+              mac: "02:00:ac:04:08:01" # aa-cpe|ab-isp|ac-lan|ad-vm:01-lan|02-wan|pc-id:CPE-id:nic num
+          uploadfiles:
+          #These are commands run within the VM via SSH
+          sshcommands:
+            - "ip a"
+            - "ip route"
+    -
+      description: "Branch 2"
+      domainname: "BR2"
+      hostname: "BR2"
+      create: True
+      interfaces:
+        -
+          domainname: "net_br2lan0"
+          model: "e1000"
+          mac: "02:00:aa:01:09:01" # aa-cpe|ab-isp|ac-lan|ad-vm:01-lan|02-wan|pc-id:CPE-id:nic num
+        -
+          domainname: "br-wan32"
+          model: "e1000"
+          mac: "02:00:aa:02:09:02" # aa-cpe|ab-isp|ac-lan|ad-vm:01-lan|02-wan|pc-id:CPE-id:nic num
+        -
+          domainname: "br-wan42"
+          model: "e1000"
+          mac: "02:00:aa:02:09:03" # aa-cpe|ab-isp|ac-lan|ad-vm:01-lan|02-wan|pc-id:CPE-id:nic num
+        -
+          domainname: "net_br2lan1"
+          model: "e1000"
+          mac: "02:00:aa:01:09:04" # aa-cpe|ab-isp|ac-lan|ad-vm:01-lan|02-wan|pc-id:CPE-id:nic num
+      
+      uploadfiles:
+      #These are commands run within the VM via SSH
+      sshcommands:
+        - "ip route"
+        - "ip -br a"
+      curlcommands:
+      curlscript: "BR2.sh"
+      lan_startup_timeout: 30
+      lanvms:
+        -
+          domainname: "BR2_LAN1"
+          hostname: "BR2_LAN1"
+          create: True
+          description: "BRANCH_2 LAN1"
+          interfaces:
+            -
+              domainname: "net_br2lan0"
+              model: "e1000"
+              mac: "02:00:ac:01:09:01" # aa-cpe|ab-isp|ac-lan|ad-vm:01-lan|02-wan|pc-id:CPE-id:nic num
+          uploadfiles:
+          #These are commands run within the VM via SSH
+          sshcommands:
+            - "ip a"
+            - "ip route"
+        -
+          domainname: "BR2_LAN2"
+          hostname: "BR2_LAN2"
+          create: True
+          description: "BRANCH_2 LAN2"
+          interfaces:
+            -
+              domainname: "net_br2lan0"
+              model: "e1000"
+              mac: "02:00:ac:02:09:01" # aa-cpe|ab-isp|ac-lan|ad-vm:01-lan|02-wan|pc-id:CPE-id:nic num
+          uploadfiles:
+          #These are commands run within the VM via SSH
+          sshcommands:
+            - "ip a"
+            - "ip route"
+        -
+          domainname: "BR2_LAN3"
+          hostname: "BR2_LAN3"
+          create: True
+          description: "BRANCH_2 LAN3"
+          interfaces:
+            -
+              domainname: "net_br2lan1"
+              model: "e1000"
+              mac: "02:00:ac:03:09:01" # aa-cpe|ab-isp|ac-lan|ad-vm:01-lan|02-wan|pc-id:CPE-id:nic num
+          uploadfiles:
+          #These are commands run within the VM via SSH
+          sshcommands:
+            - "ip a"
+            - "ip route"
+        -
+          domainname: "BR2_LAN4"
+          hostname: "BR2_LAN4"
+          create: True
+          description: "BRANCH_2 LAN4"
+          interfaces:
+            -
+              domainname: "net_br2lan1"
+              model: "e1000"
+              mac: "02:00:ac:04:09:01" # aa-cpe|ab-isp|ac-lan|ad-vm:01-lan|02-wan|pc-id:CPE-id:nic num
+          uploadfiles:
+          #These are commands run within the VM via SSH
+          sshcommands:
+            - "ip a"
+            - "ip route"

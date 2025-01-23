@@ -1,0 +1,25 @@
+
+
+Debugging EC Events Unknown status Issue:
+========================================
+
+1. Touch the following file 
+
+    touch /var/register/debug_mgmt_sendevent
+     
+2. Check /var/log/syslog  or /var/log/mgmttunnel.log  for sendEvent messages
+
+    cat /var/log/syslog | grep -a sendEvent
+
+    cat /var/log/mgmttunnel.log | grep -a sendEvent
+    
+
+3.  Once debugging completed w.r.t EC events , delete the debug file that touched in Step-1
+
+    rm -f /var/register/debug_mgmt_sendevent
+    
+
+
+
+
+

@@ -1,0 +1,38 @@
+# zWAN Provider Failover Testing 
+
+## Introduction
+
+This purpose of testing to verify provider UI functionality with provider failure cases.
+
+## Failover Test Cases
+
+
+
+| Test Case                                                                      | Expected Results                                                                                                                                                                        |
+|--------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Unplug LAN network cable in Primary Server                                     | Failover should happen and keepalived switched to node2. Provider and EC should work proper                                                                                             |
+| Onboard CPE/BPI in failover mode, when LAN network cable is unplugged.         | BPI /vCPE should be onboarded properly. Provider and EC should work proper                                                                                                              |
+| Plug the LAN cable in Primary Server.                                          | Keepalived should switch back to Primary node. Provider and EC should work proper                                                                                                       |
+| Unplug bond interface network cable in Primary Server                          | Failover should happen and keepalived switched to node2. Provider and EC should work proper                                                                                             |
+| Plug the bond interface back in primary server                                 | Keepalived   should switch back to Primary node. Provider and EC should work proper                                                                                                     |
+| Make keepalived stop manually by using below command systemctl stop keepalived | Keepalived   switched to node2. Since all vm are alive, WAN and Bond interface are live,   Automatically switched back to node-1 in the second cycle of cronjob call to   vm-monitor.sh |
+| Start keepalived manually in host machine by using below commands systemctl start keepalived   | Previous test case taking care of this automatically                                                                                                                                          |
+| Make k3s1 vm down manually in primary server virsh shutdown k3s1               | On   shutting down k3s1 vm. Both k3s1 and openvpn1 goes down. Failover should   happen and keepalived switched to node2. Provider and EC should work proper                             |
+| Onboard BPI/ CPE in failover mode, when k3s1 is down                           | BPI/   vCPE should be onboarded properly. Provider and Ec should work proper                                                                                                            |
+| Make k3s1 vm up manually and check everything proper virsh poweron k3s1        | On   starting k3s1 vm. Both k3s1 and openvpn1 are up.  Keepalived switched back to node-1.   Provider and EC working proper                                                             |
+| Make openvpn1 vm down manually virsh shutdown openvpn1                         | On   shutting down openvpn1 VM. Failover should happen and keepalived switched to   node2. Provider and EC should work proper                                                           |
+| Onboard BPI/ CPE in failover mode, when openvpn1 is down                       | On   shutdown openvpn1 vm. Provider in failover mode i.e., node-2. vCPE onboarded   properly. Provider and EC working proper                                                            |
+| Make openvpn1 vm up manually virsh poweron openvpn1                            | On   started openvpn1 vm. Keepalived switched back to node-1. Provider and EC   working proper                                                                                          |
+| Make elk1 vm down manually virsh shutdown elk1                                 | On   shutting down elk1 vm. Both k3s1 and openvpn1 goes down. Failover should   happen and keepalived switched to node2. Provider and EC should work proper                             |
+| Onboard BPI/ CPE in failover mode, when elk1 is down                           | On   shutting down elk1 vm. Both elk1 and openvpn1 goes down. Provider in failover   mode i.e., node-2. vCPE onboarded properly. Provider and EC working proper                         |
+| Make   elk1 vm up manually virsh poweron elk1                                  | On starting   elk1 vm. Both elk1 and openvpn1 are up.    Keepalived switched back to node-1. Provider and EC working proper                                                             |
+| Restart the primary server                                                     | Failover and failback   should happen. Provider and EC should work properly.                                                                                                            |
+| Abrupt power down the primary server                                           | Failover   should happen and keepalived switched to node2. Provider and EC should work   proper                                                                                         |
+| Unplug LAN   network cable in Secondary Server1                                | Provider UI Should   work without any issues                                                                                                                                            |
+| Restart the secondary server1                                                  | Provider UI Should   work without any issues                                                                                                                                            |
+| Abrupt power down the secondary server1                                        | Provider UI Should   work without any issues                                                                                                                                            |
+| Unplug LAN   network cable in Secondary Server2                                | Provider UI Should   work without any issues                                                                                                                                            |
+| Restart the secondary server2                                                  | Provider UI Should   work without any issues                                                                                                                                            |
+| Abrupt power down the secondary server2                                        | Provider UI Should   work without any issues                                                                                                                                            |
+| Unclean shutdown of all servers with edge controllers                          | Provider UI Should work without any issues after bringup the servers                                                                                                                    |
+| Remove the ISL bond cable from managed switch                                  | Provider UI should work without any issues                                                                             

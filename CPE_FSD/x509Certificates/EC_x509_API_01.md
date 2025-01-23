@@ -1,0 +1,97 @@
+# Schema
+
+https://gitlab.amzetta.com/sdwan/zwan-cpe/blob/release-0.1.0-diab/common/tegernsee/src/gql/security/modules/certificates/schema.gql
+
+# GRAPHQL API
+
+## Mutations
+
+### Import CA Certificate
+
+```
+mutation { importCertificate ( type:CA, cert:\"-----BEGIN CERTIFICATE-----\\nMIIErzCCA5egAwIBAgIUFUpcGpw7JyWH8G7yhnf/mC1RLHMwDQYJKoZIhvcNAQEL\\nBQAwgY4xCzAJBgNVBAYTAlVTMQswCQYDVQQIEwJHQTERMA8GA1UEBxMITm9yY3Jv\\nc3MxDDAKBgNVBAoTA1hZWjEQMA4GA1UECxMHQ1BFVW5pdDEPMA0GA1UEAxMGWFla\\nIENBMRAwDgYDVQQpEwdFYXN5UlNBMRwwGgYJKoZIhvcNAQkBFg1hZG1pbkB4eXou\\nY29tMB4XDTIwMDcwMTIxMjA0M1oXDTMwMDYyOTIxMjA0M1owgY4xCzAJBgNVBAYT\\nAlVTMQswCQYDVQQIEwJHQTERMA8GA1UEBxMITm9yY3Jvc3MxDDAKBgNVBAoTA1hZ\\nWjEQMA4GA1UECxMHQ1BFVW5pdDEPMA0GA1UEAxMGWFlaIENBMRAwDgYDVQQpEwdF\\nYXN5UlNBMRwwGgYJKoZIhvcNAQkBFg1hZG1pbkB4eXouY29tMIIBIjANBgkqhkiG\\n9w0BAQEFAAOCAQ8AMIIBCgKCAQEAy/XW0aUJzygR6V7TzjeF44VEftRZFxyDZq12\\nMW8U8ZZU52I8Wp0Sz1YvKifGyr1cbE9LEUFDMSjjd/VtADQ6N/+12UfIpIgbS/gp\\nLmD+Oz8XABf7yYTYDY9uyfR7LdNx7elknaWWijs+4CQHi9iPYJ4CGBUWx0YVPKp4\\nDxJ5BUYpF4xbe7tfakZJt43Tgd/jF7zYB/zJMn01EcyLNn/EbN58FOPwADj/v1Qv\\nfJXVWTLxvdbEwcUsCeoUBj0q2ual1HjObJDaEd5RYN6pW6l7URBLpMU3AynwKqfl\\n74dZzJDxjcL+f7JkEMV4IoJhcelCIxlacrlJFuCY9FXz2Ua1twIDAQABo4IBATCB\\n/jAdBgNVHQ4EFgQUAUWiXzO6Gztb5helMMmn0Ro+zvMwgc4GA1UdIwSBxjCBw4AU\\nAUWiXzO6Gztb5helMMmn0Ro+zvOhgZSkgZEwgY4xCzAJBgNVBAYTAlVTMQswCQYD\\nVQQIEwJHQTERMA8GA1UEBxMITm9yY3Jvc3MxDDAKBgNVBAoTA1hZWjEQMA4GA1UE\\nCxMHQ1BFVW5pdDEPMA0GA1UEAxMGWFlaIENBMRAwDgYDVQQpEwdFYXN5UlNBMRww\\nGgYJKoZIhvcNAQkBFg1hZG1pbkB4eXouY29tghQVSlwanDsnJYfwbvKGd/+YLVEs\\nczAMBgNVHRMEBTADAQH/MA0GCSqGSIb3DQEBCwUAA4IBAQCLH53Krf8R5SUnPryC\\nQpQ8ClzRNmcVt/iXBy4rDtOFDKvxuUH8YFmkzc2NzJas5s+FBW55jLHmG7s6Kyrz\\n0LB2l16hd9DFLDRQG/XKOETw11o3jfo202Z1Z4Cd15QcZqEeU2y0DexVLWfxGY2e\\npgblrVFSx4GVXBJX+61UDU4T3py0HCBZ5+nw5pVtIC9Q8x43keqnCqAGyFDX0XUP\\nqMmASSfBVpI3Khjx90JJZkWbesKXetO0EPfPes3oTT/fwER1j61/Z5iO1GPahfES\\n3JA8JiaTvLMwNZI5wNEYYegW5a/HsI0qmof4eXS6Lu/GdYokkeS9M6V3TmCRwPZf\\nnixY\\n-----END CERTIFICATE-----\\n\" ) { code, success, message, certificate { displayName } } }
+```
+
+### Import CRL
+
+```
+mutation { importCRL(id: 02, crl: \"-----BEGIN X509 CRL-----\\nMIICyDCCAbACAQEwDQYJKoZIhvcNAQELBQAwgY8xCzAJBgNVBAYTAlVTMQswCQYD\\nVQQIEwJHQTEPMA0GA1UEBxMGRGFjdWxhMQwwCgYDVQQKEwNBTVoxDTALBgNVBAsT\\nBFdBTloxDzANBgNVBAMTBkFNWiBDQTEQMA4GA1UEKRMHRWFzeVJTQTEiMCAGCSqG\\nSIb3DQEJARYTbWVAYW16Lm5vcmNyb3NzLmNvbRcNMjAwNDA4MTk0ODIxWhcNMjAw\\nNTA4MTk0ODIxWjAUMBICAQMXDTIwMDQwNjE5MDgzMVqggdUwgdIwgc8GA1UdIwSB\\nxzCBxIAUXO0Nnm1XENzEdE2ECxDrXx2hECmhgZWkgZIwgY8xCzAJBgNVBAYTAlVT\\nMQswCQYDVQQIEwJHQTEPMA0GA1UEBxMGRGFjdWxhMQwwCgYDVQQKEwNBTVoxDTAL\\nBgNVBAsTBFdBTloxDzANBgNVBAMTBkFNWiBDQTEQMA4GA1UEKRMHRWFzeVJTQTEi\\nMCAGCSqGSIb3DQEJARYTbWVAYW16Lm5vcmNyb3NzLmNvbYIUIXQ3BwwZDnWzX2pe\\nhII0mBC/JrswDQYJKoZIhvcNAQELBQADggEBAABpaAL+caZrT7Ostq0mzxpVNcSe\\nn7tl+T0DGRP0hS+m2ANLFckTKrJ6iiyID5Nl+e3/EP5i1t3WwLMY9PWxIn72C8bK\\nJR4TnQqWL/qd3Eet407vVKj2SGVw+EPz1VxMnWD1Bfba21BtkIqwEXxEXCBQC16M\\nE1NrGlhqFfr7RTWUMkKETm2KCnirKh+ZUkHv7swnP/xgntQAs6UX0FE1cX++zUc4\\nbeuzqUVzI7NoYGug/uSEdQHSW+BTqWjjXCn4fWihr0Ikd+Q91DNpiQC/bRpU8z/K\\nyvSBIdX742n9WTw1AXqHKOqdfIYBMIPTj0wtEFcR7CYLlWcxBVMyn+KG1As=\\n-----END X509 CRL-----\\n\") { code, success, message } }
+```
+
+### Import Host Certificate
+
+```
+mutation { importCertificate ( type:HOST, key:\"-----BEGIN PRIVATE KEY-----\\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCV0XW6B2lXYY56\\n7j/vO609gWbzGvSGvUryTFf5+pDLYKYqVU6aTHCMsRrI1trHbL02xFOz8lLyIjd4\\nGStuFNOvAgt+jna225+P78WSlpcXMSFvh0GAS8gWllYpXRFbk8rW3ZzMN91ZQls4\\nuyKBLUfBULXOIypGRRTR8BD3U5+AzXcJB7mHNDx1dyRTxiUrLnARqi7vlY2pE1Sf\\nlbC+LuHUgL4XdONqJi7m4uyLLOz5qCMei4MVKspPihovG1CV4uKJVEHlTAVP2oLV\\nXwbrP2y1P9Vg/Go1XyMCH5nkrF0mZ3LF65P7MirlifcajrkhJt6lBcy6Bt53+SEE\\nnfIHEG3rAgMBAAECggEAdpWe26q2JOYhQwiGLrRLwd1FQbPaTTRTuEnZcRJ1vaU4\\noVV4rAVJKPOeQc5eyW82rbzkjBCIuwN+aF9z0uRFUccKlhfpu39HY0TkW806tq66\\nym6C2Cwjqk1A0ejKrnPjIAO18qddWyN81QC6pQjUPR3HaezHr2tKuYmNxFa6b9X8\\nE7biVFlbPPsYbILYxTmeOy7cm2S6gty3J8Wu5tAOwlR8hx0LLsTa5cC7UJHHRMBu\\npJqknYMJt95uvzZnxvgCm5VfOVIPUSPl+3sJdZ3MNqIcho9NvCLvE0fnn37xcfR7\\n0oHbPftaTeMU1bnxImnw5PHS0mfN2oaXcugw3o9okQKBgQDE/vtuji7O5mfAwnDg\\nyfGm1yAQtn5mWYCp2s3lFc3dtr7Qokx0fB9co+B/MhlMm9ye8jp9jS/YYzBu9L+F\\ngqetb4ZzN5noCVeUvjtrRsidnvxxNK9E5A6nawLCYMDiUQ0SqyBMKXfMbm4LQDbf\\nF/75Xr3BM4KNl0xXRqCePBeM7QKBgQDCsQj04UFwpYDE9ScWrlmyuxd/ez4wrfbW\\nm+8YRtGG8S2bFYJbqhIu9V0MgZuOzg8CxXlQqVAtRwGQya0ZF1unBez7n5XIu3xK\\ntE4YD7I6Q5C1LGQaIzpMeri0niHHwZz9VwDJlPR+EChLeFvxi2VerAnONiHFmXXP\\n2CWjRdfjNwKBgHdeirzTK0n0E6qaKAwOUn/mm2eFLdKXKX/DNkA6liRjN/z0W5+6\\nFsbsBn0MvofNakJmRUsO4o8ci5ywcd1U7oYJrk7iwj/4aTmYjCjVG3tne1CdvBbi\\nmn6YOXPPbRG2S1WknE2KUy1tPQFUR+unfrlcz17i95kUtQ2tnmZDw4GBAoGAfJIj\\n5fOfGIF9BAjMKvIByJ93KIVlxGX7E1QQxtrBQ/NbN+iqURZfrhYmpFLlgpkL97z8\\no4TCHUZalRbFn9FXPmZHPLTedOKpY288rJ6Wbjs/Av1VS3gQ3FCFkGPBv3t9hIe/\\npDufuG2EKs3nHoUPpmSznXL7ZuCLBiMJ6g9NVD8CgYEAn9xTZdSADjFGfTRU8W2G\\n+KdneQtSy1Oo71iowRnsYPmVMHQqz6ybbzMn5eIcsSEGBtSQyAnJHrL2uyvcptJi\\ngQroHG7e++HQinTnf0cR5Tkqwn69bu9IcWLlfkF/mnFWZSub/2pFyZL8P/8tKVFn\\naZISXgNv/JZ0nqJoIzBRGs0=\\n-----END PRIVATE KEY-----\\n\", cert:\"-----BEGIN CERTIFICATE-----\\nMIIFGjCCBAKgAwIBAgIBFjANBgkqhkiG9w0BAQsFADCBjjELMAkGA1UEBhMCVVMx\\nCzAJBgNVBAgTAkdBMREwDwYDVQQHEwhOb3Jjcm9zczEMMAoGA1UEChMDWFlaMRAw\\nDgYDVQQLEwdDUEVVbml0MQ8wDQYDVQQDEwZYWVogQ0ExEDAOBgNVBCkTB0Vhc3lS\\nU0ExHDAaBgkqhkiG9w0BCQEWDWFkbWluQHh5ei5jb20wHhcNMjAwNzAxMjIyMDEz\\nWhcNMzAwNjI5MjIyMDEzWjCBjzELMAkGA1UEBhMCVVMxCzAJBgNVBAgTAkdBMREw\\nDwYDVQQHEwhOb3Jjcm9zczEMMAoGA1UEChMDWFlaMRAwDgYDVQQLEwdDUEVVbml0\\nMRAwDgYDVQQDEwdzZXJ2ZXIxMRAwDgYDVQQpEwdFYXN5UlNBMRwwGgYJKoZIhvcN\\nAQkBFg1hZG1pbkB4eXouY29tMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKC\\nAQEAldF1ugdpV2GOeu4/7zutPYFm8xr0hr1K8kxX+fqQy2CmKlVOmkxwjLEayNba\\nx2y9NsRTs/JS8iI3eBkrbhTTrwILfo52ttufj+/FkpaXFzEhb4dBgEvIFpZWKV0R\\nW5PK1t2czDfdWUJbOLsigS1HwVC1ziMqRkUU0fAQ91OfgM13CQe5hzQ8dXckU8Yl\\nKy5wEaou75WNqRNUn5Wwvi7h1IC+F3TjaiYu5uLsiyzs+agjHouDFSrKT4oaLxtQ\\nleLiiVRB5UwFT9qC1V8G6z9stT/VYPxqNV8jAh+Z5KxdJmdyxeuT+zIq5Yn3Go65\\nISbepQXMugbed/khBJ3yBxBt6wIDAQABo4IBfjCCAXowCQYDVR0TBAIwADARBglg\\nhkgBhvhCAQEEBAMCBkAwNAYJYIZIAYb4QgENBCcWJUVhc3ktUlNBIEdlbmVyYXRl\\nZCBTZXJ2ZXIgQ2VydGlmaWNhdGUwHQYDVR0OBBYEFAP8+qvo1bOBunYm12cMaYOj\\nyqq1MIHOBgNVHSMEgcYwgcOAFAFFol8zuhs7W+YXpTDJp9EaPs7zoYGUpIGRMIGO\\nMQswCQYDVQQGEwJVUzELMAkGA1UECBMCR0ExETAPBgNVBAcTCE5vcmNyb3NzMQww\\nCgYDVQQKEwNYWVoxEDAOBgNVBAsTB0NQRVVuaXQxDzANBgNVBAMTBlhZWiBDQTEQ\\nMA4GA1UEKRMHRWFzeVJTQTEcMBoGCSqGSIb3DQEJARYNYWRtaW5AeHl6LmNvbYIU\\nFUpcGpw7JyWH8G7yhnf/mC1RLHMwEwYDVR0lBAwwCgYIKwYBBQUHAwEwCwYDVR0P\\nBAQDAgWgMBIGA1UdEQQLMAmCB3NlcnZlcjEwDQYJKoZIhvcNAQELBQADggEBAFbw\\niJJspJZV4qbVo4pGBMtSAOlzily1IH2bAveNRJCGTLiFtCucPjUAJy9dXQYTFNEg\\n9Gf2DwvfxG0McNhkKOS8OerkFD1Bfr3k5UzM7/AMR8uZfOd8uLZVd67QNFd2LMp2\\njjIBURFu7Upmy9inFELVYu+65IpgV/zshSkZ0ttLt8tkoXJJsbye8cR870QXLgtY\\nJ5vAcfoDfVh49luJ6DHPRvBsrLRagrD4v9GuCxXny3elwlkGFt7OfCVoMIq+CX1X\\nxOtZZ8XfdC+FJ/gNSU2O6R1NiU0Wjm3+c2YE838Glixtdpset6W82QzqFivjxQ5B\\nJT1JmkEtT6LTmB5UxbU=\\n-----END CERTIFICATE-----\\n\" ) { code, success, message, certificate { displayName }  } }
+```
+
+### 
+
+## Queries
+
+### List HOST Certificate
+
+```
+query{
+  security{
+    certificates(type:HOST){
+      subject{
+        organizationalUnitName
+      	commonName
+        organizationName
+        countryName
+      }
+      issuer{
+        organizationalUnitName
+        commonName
+				organizationName
+        localityName
+        stateOrProvinceName
+        countryName
+      }
+      status
+      notBefore
+      notAfter
+      id
+      displayName
+      fullText
+    }
+  }
+}
+```
+
+### List CA Certificate
+
+```
+query{
+  security{
+    certificates(type:HOST){
+      subject{
+        organizationalUnitName
+      	commonName
+        organizationName
+        countryName
+      }
+      issuer{
+        organizationalUnitName
+        commonName
+				organizationName
+        localityName
+        stateOrProvinceName
+        countryName
+      }
+      status
+      notBefore
+      notAfter
+      id
+      displayName
+      fullText
+      crl
+      crlText
+      crlExists
+    }  
+  }
+}
+
+```
+
+

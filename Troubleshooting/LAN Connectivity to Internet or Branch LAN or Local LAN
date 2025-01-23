@@ -1,0 +1,8 @@
+# Troubleshooting LAN connectivity to Internet via WAN, remote Branch LAN or local Branch LAN
+
+## Please verify the following configuration
+
+- Verify if WAN to LAN forwarding is enabled on the Router->Routes Page. If it is disabled then forwarding of traffic across interfaces are disabled.
+
+- If LAN to LAN communication is required then make sure that LAN to LAN forwarding is enabled on the Router->Routes Page
+

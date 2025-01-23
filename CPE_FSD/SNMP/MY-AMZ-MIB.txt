@@ -1,0 +1,209 @@
+MY-AMZ-MIB DEFINITIONS ::= BEGIN
+
+IMPORTS
+	MODULE-IDENTITY, 
+	OBJECT-TYPE, 
+	enterprises, 
+	NOTIFICATION-TYPE  FROM SNMPv2-SMI
+
+	MODULE-COMPLIANCE, 
+	OBJECT-GROUP, 
+	NOTIFICATION-GROUP   FROM SNMPv2-CONF
+
+	DisplayString FROM SNMPv2-TC;
+
+--root of our MIB will point to enterprises
+
+myCompanyMIB MODULE-IDENTITY
+	LAST-UPDATED
+	"202209190000Z"
+	ORGANIZATION
+	"AMZETTA"
+	CONTACT-INFO
+	"email: amzetta@india.com"
+	DESCRIPTION
+	"Custom Example MIB"
+	REVISION
+	"202209190000Z"
+	DESCRIPTION
+	"First and hopefully not the final revision"
+	::= { enterprises 54848 }
+
+
+-- lets group all scalarValues in one node of our MIB
+
+interfaceAlertNotifications    OBJECT IDENTIFIER ::= {  myCompanyMIB 0 }
+systeminfo OBJECT IDENTIFIER ::= { myCompanyMIB 1 }
+info OBJECT IDENTIFIER ::= { systeminfo 2 }
+
+
+-- time to define scalar values
+
+productObjects        OBJECT-GROUP
+                      OBJECTS {
+                        hostname,
+                        ip, 
+                        hostProductID,
+                        hwType,
+                        dateTime,
+                        interfaceName,
+                        interfaceStatus,
+                        fwVersion,
+                        description,
+                        diskName,
+                        diskUsage,
+                        memoryUsage,
+                        temperature,
+                        cpuUsage
+                      }
+                      STATUS  current
+                      DESCRIPTION
+                        "A collection of objects providing support for
+                         the system MIB."
+                      ::= { systeminfo 1 }
+
+-----------------------------------------------------------------------
+-- AGENT INFO
+-----------------------------------------------------------------------
+
+hostname 			OBJECT-TYPE
+	SYNTAX 			DisplayString 
+	MAX-ACCESS 		read-only
+	STATUS 			current
+	DESCRIPTION		"Static string AGENT Hostname"
+	::= { info 1 }
+
+
+ip 				OBJECT-TYPE
+	SYNTAX 			DisplayString
+	MAX-ACCESS 		read-only
+	STATUS 			current
+	DESCRIPTION		"Static string AGENT System IP"
+	::= { info 2 }
+
+hostProductID 			OBJECT-TYPE
+	SYNTAX 			DisplayString
+	MAX-ACCESS 		read-only
+	STATUS 			current
+	DESCRIPTION		"Static string AGENT PRODUCT ID"
+	::= { info 3 }
+
+hwType                         	OBJECT-TYPE
+	SYNTAX 			DisplayString
+	MAX-ACCESS 		read-only
+	STATUS 			current
+	DESCRIPTION		"Static string AGENT Hardware Type"
+	::= { info 4 }
+
+dateTime			OBJECT-TYPE
+        SYNTAX                  DisplayString
+        MAX-ACCESS              read-only
+        STATUS                  current
+        DESCRIPTION             "Unix TIME  Time"
+        ::= { info 5 }
+
+interfaceName			OBJECT-TYPE
+        SYNTAX                  DisplayString
+        MAX-ACCESS              read-only
+        STATUS                  current
+        DESCRIPTION             "Agent WAN Interface Name"
+        ::= { info 6 }
+
+
+interfaceStatus			OBJECT-TYPE
+        SYNTAX                  DisplayString
+        MAX-ACCESS              read-only
+        STATUS                  current
+        DESCRIPTION             "Agent WAN Interface Status "
+        ::= { info 7 }
+
+
+fwVersion			OBJECT-TYPE
+        SYNTAX                  DisplayString
+        MAX-ACCESS              read-only
+        STATUS                  current
+        DESCRIPTION             "Agent Firmware Version"
+        ::= { info 8 }
+
+description			OBJECT-TYPE
+        SYNTAX                  DisplayString
+        MAX-ACCESS              read-only
+        STATUS                  current
+        DESCRIPTION             "AGENT Info Description"
+        ::= { info 9 }
+
+diskName                        OBJECT-TYPE
+        SYNTAX                  DisplayString
+        MAX-ACCESS              read-only
+        STATUS                  current
+        DESCRIPTION             "Agent Disk Name"
+        ::= { info 10 }
+
+diskUsage                       OBJECT-TYPE
+        SYNTAX                  DisplayString
+        MAX-ACCESS              read-only
+        STATUS                  current
+        DESCRIPTION             "Agent Disk Usage"
+        ::= { info 11 }
+
+memoryUsage                       OBJECT-TYPE
+        SYNTAX                  DisplayString
+        MAX-ACCESS              read-only
+        STATUS                  current
+        DESCRIPTION             "Agent Memory Usage"
+        ::= { info 12 }
+
+temperature                       OBJECT-TYPE
+        SYNTAX                  DisplayString
+        MAX-ACCESS              read-only
+        STATUS                  current
+        DESCRIPTION             "Agent Temperature"
+        ::= { info 13 }
+
+cpuUsage                       OBJECT-TYPE
+        SYNTAX                  DisplayString
+        MAX-ACCESS              read-only
+        STATUS                  current
+        DESCRIPTION             "Agent cpu Usage"
+        ::= { info 14 }
+
+----------------------------------------------------------------------
+-- notification
+
+----------------------------------------------------------------------
+
+interfaceSattusGroup 		NOTIFICATION-GROUP
+	NOTIFICATIONS 		{  agentinfo }
+	STATUS        		current
+	DESCRIPTION			"The basic notifications implemented by an SNMP"
+	::= { interfaceAlertNotifications 2 }
+
+agentinfo		 	NOTIFICATION-TYPE
+	OBJECTS			{      	hostname,
+                        		hostProductID,
+                        		hwType,
+                        		dateTime,
+                        		interfaceName,
+                        		interfaceStatus,
+                                fwVersion,
+                                description,
+                                diskName,
+                                diskUsage,
+                                memoryUsage,
+                                temperature,
+                                cpuUsage
+                                }
+	STATUS       		current
+	DESCRIPTION		"A notification about a change in the alert status of a ZWAN agent."
+	::= {interfaceAlertNotifications 1 }
+-----------------------------------------------------------------------
+productCompliances    		MODULE-COMPLIANCE
+	STATUS     		current
+	DESCRIPTION		"Compliance statement for the the entities in this (theSystem) MIB."
+	MODULE			MANDATORY-GROUPS {
+                       			productObjects,
+                        		interfaceSattusGroup
+                     		 }
+       ::= { systeminfo 3 }
+
+END
